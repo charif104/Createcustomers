@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace EmailSenderProgram
 {
     /// <summary>
-  /// here is the main class , it will start with sending listcutomers and list orders to the constructer
+  /// Here is the main class , it will start with sending listcutomers and list orders to the constructer.
+  /// the main class will not have a lot of method .
   /// 
   /// </summary>
     internal class Program

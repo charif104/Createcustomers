@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+/// <summary>
+/// this is a class which it will handle all types of emails , in this class we will get the list of customers and list of orders  and make another list with 
+/// new customers and list with customers with no orders . the old code send email to new customer that has no order but i have delete this because i see it 
+/// ugly to send email with welcome as new customer and same time come back email . 
+/// </summary>
 namespace EmailSenderProgram
 {
     class EmailHandler
@@ -12,7 +18,7 @@ namespace EmailSenderProgram
         private List<Order> orders;
 
         /// <summary>
-        /// consructor to receive the list of customers and orders
+        /// consructor with customer list and order list 
         /// </summary>
         /// <param name="customers"></param>
         /// <param name="orders"></param>
@@ -25,23 +31,25 @@ namespace EmailSenderProgram
        
 
         /// <summary>
-        /// 
+        /// this is the start method, where it with two dels . the first del getting the list with new customers and a list of customers with no orders , 
+        /// and then try to send the emails and if failed save the failed emails in another list .
         /// </summary>
         public void SendEmails()
         {
-            List<Customer> newCustomers;
+            List<Customer> newCustomers; 
             List<Customer> noOrderCustomers;
             GetCustomersByType(out newCustomers, out noOrderCustomers);
 
-            //Call the method that do the work for me, I.E. sending the mails
+            
             Console.WriteLine("Send Welcomemail");
+              // send the list with newcustomers to method sendeamiltocustomers and which type of email , if it failed it will be saves 
+              // in the failed list 
             List<Customer> failed = SendEmailToCustomers(newCustomers, EmailType.WelcomeEmail, "");
 
 #if DEBUG
             //Debug mode, always send Comeback mail
             Console.WriteLine("Send Comebackmail");
-            failed.AddRange(
-                SendEmailToCustomers(noOrderCustomers, EmailType.ComebackEmail, "EOComebackToUs"));
+            failed.AddRange(SendEmailToCustomers(noOrderCustomers, EmailType.ComebackEmail, "EOComebackToUs"));
 #else
 			//Every Sunday run Comeback mail
 			if (DateTime.Now.DayOfWeek.Equals(DayOfWeek.Sunday))
@@ -52,7 +60,7 @@ namespace EmailSenderProgram
             }
 #endif
 
-            //Check if the sending went OK
+            //Check if the sending went OK; it failed list is 0 this means there is no emails that didnt send 
             if (failed.Count == 0)
             {
                 Console.WriteLine("All emails are sent.");
@@ -102,14 +110,23 @@ namespace EmailSenderProgram
                 }
             }
         }
-              
+          
+        
+        /// <summary>
+        /// method to send emails and check that all emails are sended 
+        /// </summary>
+        /// <param name="customers"></param>
+        /// <param name="emailType"></param>
+        /// <param name="voucher"></param>
+        /// <returns></returns>
+                    
         private List<Customer> SendEmailToCustomers(List<Customer> customers, EmailType emailType, string voucher)
         {
             List<Customer> failed = new List<Customer>();
 
             foreach (Customer customer in customers)
             {
-                if (!SendlEmailToCustomer(emailType, customer?.Email, voucher))
+                if (!SendlEmailToCustomer(emailType, customer?.Email, voucher)) //if it failed it will save customer to failed list 
                     failed.Add(customer);
             }
 
@@ -155,7 +172,6 @@ namespace EmailSenderProgram
 					smtp.Send(mailMessage);
 #endif
 
-
                 //All mails are sent! Success!
                 return true;
             }
@@ -167,7 +183,16 @@ namespace EmailSenderProgram
             }
 
         }
-      
+      /// <summary>
+      /// method to return right subject and title depending on the email type which will be send , 
+      /// this method is good if we want to add more email type in the future . 
+      /// </summary>
+      /// <param name="emailType"></param>
+      /// <param name="email"></param>
+      /// <param name="voucher"></param>
+      /// <param name="title"></param>
+      /// <param name="body"></param>
+      /// <returns></returns>
         private bool GetTitleAndBodyForEmailType(EmailType emailType, string email, string voucher, out string title, out string body)
         {
             switch (emailType)

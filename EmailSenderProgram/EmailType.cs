@@ -14,7 +14,7 @@ namespace EmailSenderProgram
         WelcomeEmail,
         ComebackEmail,
         NoEmail,
-       // Reminder,
+     
 
     }
 }
